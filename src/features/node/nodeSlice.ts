@@ -1,21 +1,20 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Node } from '@xyflow/react';
 
-// initialState формируется из localStorage (также придумай NodeSchema)
 export interface NodeSchema {
-  nodes: Node[];
+  nodes: Node[]; // Используем тип Node
   selectedNode: Node | null;
 }
 
+// Загружаем узлы из localStorage
 const loadNodesFromLocalStorage = (): Node[] => {
   const storedNodes = localStorage.getItem('graphNodes');
-  const nodes = storedNodes ? JSON.parse(storedNodes) : [];
+  return storedNodes ? JSON.parse(storedNodes) : [];
+};
 
-  // Проверяем и восстанавливаем типы узлов
-  return nodes.map((node: Node) => ({
-    ...node,
-    type: node.type || 'customNode' // Если тип отсутствует, устанавливаем 'customNode'
-  }));
+// Функция для обновления localStorage
+const updateLocalStorage = (nodes: Node[]) => {
+  localStorage.setItem('graphNodes', JSON.stringify(nodes));
 };
 
 const initialState: NodeSchema = {
@@ -28,27 +27,36 @@ export const nodeSlice = createSlice({
   initialState,
 
   reducers: {
-    // Нужные редьюсеры (чтобы она автоматически взаимодействовали со стором и localStorage):
-    // Добавить ноду
     addNode: (state, action: PayloadAction<Node>) => {
       state.nodes.push(action.payload);
-      localStorage.setItem('graphNodes', JSON.stringify(state.nodes));
+      updateLocalStorage(state.nodes);
     },
-    // Удалить ноду
+
     deleteNode: (state, action: PayloadAction<string>) => {
       state.nodes = state.nodes.filter((node) => node.id !== action.payload);
-      localStorage.setItem('graphNodes', JSON.stringify(state.nodes));
+      state.selectedNode = null; // Сбрасываем выбранный узел
+      updateLocalStorage(state.nodes);
     },
-    // Выбрать ноду (когда кликаешь на неё)
+
     selectNode: (state, action: PayloadAction<string | null>) => {
       state.selectedNode = state.nodes.find((node) => node.id === action.payload) || null;
     },
+
+    updateNodeLabel: (state, action: PayloadAction<{ id: string; newLabel: string }>) => {
+      const node = state.nodes.find((node) => node.id === action.payload.id);
+      // if (node && typeof node.data === 'object') {
+      if (node) {
+        node.data = { ...node.data, label: action.payload.newLabel }; // Обновляем label
+        updateLocalStorage(state.nodes);
+      }
+    },
+
     setNodes: (state, action: PayloadAction<Node[]>) => {
       state.nodes = action.payload;
-      localStorage.setItem('graphNodes', JSON.stringify(state.nodes));
+      updateLocalStorage(state.nodes);
     }
   }
 });
 
-export const { addNode, deleteNode, selectNode, setNodes } = nodeSlice.actions;
+export const { addNode, deleteNode, selectNode, updateNodeLabel, setNodes } = nodeSlice.actions;
 export const nodeReducer = nodeSlice.reducer;

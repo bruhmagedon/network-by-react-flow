@@ -12,10 +12,16 @@ import {
   EdgeChange,
   applyEdgeChanges
 } from '@xyflow/react';
-import { addNode as addNodeAction, setNodes } from '@/features/node/nodeSlice';
+import {
+  addNode as addNodeAction,
+  deleteNode as deleteNodeAction,
+  updateNodeLabel as updateNodeLabelAction,
+  setNodes
+} from '@/features/node/nodeSlice';
 import { addEdge as addEdgeAction, setEdges } from '@/features/edge/edgeSlice';
 import { StateSchema } from '@/app/store/StateSchema';
 import { AppDispatch } from '@/app/store/store';
+import { useEffect } from 'react';
 
 export const useGraphs = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -25,9 +31,17 @@ export const useGraphs = () => {
   const [nodes, setNodesState, onNodesChange] = useNodesState(nodesFromStore);
   const [edges, setEdgesState, onEdgesChange] = useEdgesState(edgesFromStore);
 
+  useEffect(() => {
+    setNodesState(nodesFromStore);
+  }, [nodesFromStore, setNodesState]);
+
+  useEffect(() => {
+    setEdgesState(edgesFromStore);
+  }, [edgesFromStore, setEdgesState]);
+
   const addNode = () => {
     const newNode: Node = {
-      id: `node-${nodes.length + 1}`, // Уникальный id для узла
+      id: `node-${nodes.length + 1}`,
       type: 'customNode',
       data: { label: `Node ${nodes.length + 1}` },
       // TODO придумать какие то новые расстановки позиций
@@ -37,26 +51,39 @@ export const useGraphs = () => {
     dispatch(addNodeAction(newNode));
   };
 
+  const deleteNode = (id: string) => {
+    const updatedNodes = nodes.filter((node) => node.id !== id);
+    setNodesState(updatedNodes);
+    dispatch(deleteNodeAction(id));
+  };
+
+  const updateNodeLabel = (id: string, newLabel: string) => {
+    const updatedNodes = nodes.map((node) =>
+      node.id === id ? { ...node, data: { ...node.data, label: newLabel } } : node
+    );
+    setNodesState(updatedNodes);
+    dispatch(updateNodeLabelAction({ id, newLabel }));
+  };
+
   const onConnect = (params: Edge | Connection) => {
     const newEdge: Edge = {
       ...params,
-      id: `edge-${params.source}-${params.target}` // Уникальный id для каждого ребра
+      id: `edge-${params.source}-${params.target}`
     };
-    setEdgesState((eds) => addEdge(newEdge, eds)); // Обновляем состояние
-    dispatch(addEdgeAction(newEdge)); // Сохраняем в Redux
+    setEdgesState((eds) => addEdge(newEdge, eds));
+    dispatch(addEdgeAction(newEdge));
   };
 
-  // Исправление: Проверка наличия свойства id
   const onNodesChangeCallback = (changes: NodeChange[]) => {
     const updatedNodes = applyNodeChanges(changes, nodes);
-    setNodesState([...updatedNodes]); // Создаём новый массив
-    dispatch(setNodes([...updatedNodes])); // Отправляем в Redux Store
+    setNodesState([...updatedNodes]);
+    dispatch(setNodes([...updatedNodes]));
   };
 
   const onEdgesChangeCallback = (changes: EdgeChange[]) => {
     const updatedEdges = applyEdgeChanges(changes, edges);
-    setEdgesState([...updatedEdges]); // Создаём новый массив
-    dispatch(setEdges([...updatedEdges])); // Отправляем в Redux Store
+    setEdgesState([...updatedEdges]);
+    dispatch(setEdges([...updatedEdges]));
   };
 
   return {
@@ -65,6 +92,8 @@ export const useGraphs = () => {
     onNodesChange: onNodesChangeCallback,
     onEdgesChange: onEdgesChangeCallback,
     addNode,
+    deleteNode,
+    updateNodeLabel,
     onConnect
   };
 };

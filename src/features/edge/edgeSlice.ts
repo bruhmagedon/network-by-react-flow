@@ -14,6 +14,12 @@ const initialState: EdgeSchema = {
   edges: loadEdgesFromLocalStorage()
 };
 
+// TODO
+// 1. Подчищать эджи при удалении ноды (с которой они связаны)
+// 2. Селект эджа и действия с ним в сайдаре:
+//    a. Изменить вес эджа
+//    b. Удалить эдж
+//    c. Показатль связанные с эджем ноды
 export const edgeSlice = createSlice({
   name: 'edge',
   initialState,

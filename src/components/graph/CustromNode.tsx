@@ -1,16 +1,36 @@
-import { NodeProps, Handle, Position, Node } from '@xyflow/react';
+import { StateSchema } from '@/app/store/StateSchema';
+import { AppDispatch } from '@/app/store/store';
+import { selectNode } from '@/features/node/nodeSlice';
+import { cn } from '@/lib/utils';
+import { NodeProps, Handle, Position } from '@xyflow/react';
+import { useDispatch, useSelector } from 'react-redux';
 
-interface CustomNodeProps extends NodeProps {
+export interface CustomNodeProps extends NodeProps {
   data: {
     label: string;
   };
 }
 
-export const CustomNode = ({ data }: CustomNodeProps) => {
+export const CustomNode = ({ id, data }: CustomNodeProps) => {
+  const dispatch: AppDispatch = useDispatch();
+  const selectedNodeId = useSelector((state: StateSchema) => state.nodes.selectedNode?.id);
+
+  const isSelected = id === selectedNodeId;
+
+  const handleNodeClick = () => {
+    dispatch(selectNode(id));
+  };
+
   return (
-    <div className='w-16 h-16 hover:bg-blue-600 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg '>
-      <span>{data.label}</span>
-      {/* Handle для соединения с другими узлами */}
+    // TODO проблемы с селектом при нажатии на текст (чекнуть в чем может быть дело)
+    <div
+      className={cn(
+        isSelected && 'border-2 border-blue-900',
+        'w-16 h-16 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer'
+      )}
+      onClick={handleNodeClick} // Обработка клика
+    >
+      <span className='text-sm'>{data.label}</span>
       <Handle type='source' position={Position.Right} id='a' className='w-2 h-2 bg-white' />
       <Handle type='target' position={Position.Left} id='b' className='w-2 h-2 bg-white' />
     </div>
