@@ -1,10 +1,10 @@
-import { StateSchema } from '@/app/store/StateSchema';
-import { AppDispatch } from '@/app/store/store';
-import { edgeSlice } from '@/features/edge/edgeSlice';
-import { selectNode } from '@/features/node/nodeSlice';
+import { edgeActions } from '@/features/edge';
+import { nodeActions } from '../model/nodeSlice';
 import { cn } from '@/lib/utils';
 import { NodeProps, Handle, Position } from '@xyflow/react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { getSelectedNode } from '../selectors/getNodes';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 
 export interface CustomNodeProps extends NodeProps {
   data: {
@@ -13,14 +13,14 @@ export interface CustomNodeProps extends NodeProps {
 }
 
 export const CustomNode = ({ id, data }: CustomNodeProps) => {
-  const dispatch: AppDispatch = useDispatch();
-  const selectedNodeId = useSelector((state: StateSchema) => state.nodes.selectedNode?.id);
+  const dispatch = useAppDispatch();
 
-  const isSelected = id === selectedNodeId;
+  const selectedNode = useSelector(getSelectedNode);
+  const isSelected = id === selectedNode?.id;
 
   const handleNodeClick = () => {
-    dispatch(edgeSlice.actions.resetSelection());
-    dispatch(selectNode(id));
+    dispatch(edgeActions.resetSelection());
+    dispatch(nodeActions.selectNode(id));
   };
 
   return (
@@ -30,7 +30,7 @@ export const CustomNode = ({ id, data }: CustomNodeProps) => {
         isSelected && 'border-2 border-cyan-700',
         'w-16 h-16 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-teal-500'
       )}
-      onClick={handleNodeClick} // Обработка клика
+      onClick={handleNodeClick}
     >
       <span className='text-sm'>{data.label}</span>
       <Handle type='source' position={Position.Right} id='a' className='w-2 h-2 bg-white' />

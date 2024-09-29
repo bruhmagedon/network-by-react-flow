@@ -1,22 +1,19 @@
 import { StateSchema } from '@/app/store/StateSchema';
-import { AppDispatch } from '@/app/store/store';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import { useNodesState, Node, NodeChange, applyNodeChanges } from '@xyflow/react';
-import {
-  addNode as addNodeAction,
-  deleteNode as deleteNodeAction,
-  updateNodeLabel as updateNodeLabelAction,
-  setNodes
-} from '@/features/node/nodeSlice';
+
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { edgeSlice } from '@/features/edge/edgeSlice';
+import { useSelector } from 'react-redux';
+import { edgeSlice } from '@/features/edge/model/edgeSlice';
+import { getNodes, nodeActions } from '@/features/node';
+import { getEdges } from '@/features/edge';
 
 export const useNode = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const nodesFromStore = useSelector((state: StateSchema) => state.nodes.nodes);
-  const edgesFromStore = useSelector((state: StateSchema) => state.edges.edges);
+  const dispatch = useAppDispatch();
+  const nodesFromStore = useSelector(getNodes);
+  const edgesFromStore = useSelector(getEdges);
 
-  const [nodes, setNodesState, onNodesChange] = useNodesState(nodesFromStore);
+  const [nodes, setNodesState] = useNodesState(nodesFromStore);
 
   useEffect(() => {
     setNodesState(nodesFromStore);
@@ -31,7 +28,7 @@ export const useNode = () => {
       position: { x: Math.random() * 400, y: Math.random() * 400 }
     };
     setNodesState((nds) => [...nds, newNode]);
-    dispatch(addNodeAction(newNode));
+    dispatch(nodeActions.addNode(newNode));
   };
 
   const deleteNode = (id: string) => {
@@ -39,7 +36,7 @@ export const useNode = () => {
     // Удаляем все эджи, связанные с нодой
     const updatedEdges = edgesFromStore.filter((edge) => edge.source !== id && edge.target !== id);
     setNodesState(updatedNodes);
-    dispatch(deleteNodeAction(id));
+    dispatch(nodeActions.deleteNode(id));
     dispatch(edgeSlice.actions.setEdges(updatedEdges));
   };
 
@@ -48,13 +45,13 @@ export const useNode = () => {
       node.id === id ? { ...node, data: { ...node.data, label: newLabel } } : node
     );
     setNodesState(updatedNodes);
-    dispatch(updateNodeLabelAction({ id, newLabel }));
+    dispatch(nodeActions.updateNodeLabel({ id, newLabel }));
   };
 
   const onNodesChangeCallback = (changes: NodeChange[]) => {
     const updatedNodes = applyNodeChanges(changes, nodes);
     setNodesState([...updatedNodes]);
-    dispatch(setNodes([...updatedNodes]));
+    dispatch(nodeActions.setNodes([...updatedNodes]));
   };
 
   return {

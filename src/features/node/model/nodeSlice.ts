@@ -1,38 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { NodeSchema } from './NodeSchema';
 import { Node } from '@xyflow/react';
-
-export interface NodeSchema {
-  nodes: Node[];
-  selectedNode: Node | null;
-}
-
-const loadNodesFromLocalStorage = (): Node[] => {
-  const storedNodes = localStorage.getItem('graphNodes');
-  return storedNodes ? JSON.parse(storedNodes) : [];
-};
-
-const updateLocalStorage = (nodes: Node[]) => {
-  localStorage.setItem('graphNodes', JSON.stringify(nodes));
-};
+import { loadFromLocalStorage, updateLocalStorage } from '@/lib/localStorage';
 
 const initialState: NodeSchema = {
-  nodes: loadNodesFromLocalStorage(),
+  nodes: loadFromLocalStorage('graphNodes'),
   selectedNode: null
 };
 
 export const nodeSlice = createSlice({
   name: 'node',
   initialState,
-
   reducers: {
     addNode: (state, action: PayloadAction<Node>) => {
       state.nodes.push(action.payload);
-      updateLocalStorage(state.nodes);
+      updateLocalStorage(state.nodes, 'graphNodes');
     },
     deleteNode: (state, action: PayloadAction<string>) => {
       state.nodes = state.nodes.filter((node) => node.id !== action.payload);
       state.selectedNode = null;
-      updateLocalStorage(state.nodes);
+      updateLocalStorage(state.nodes, 'graphNodes');
     },
     selectNode: (state, action: PayloadAction<string | null>) => {
       state.selectedNode = state.nodes.find((node) => node.id === action.payload) || null;
@@ -41,12 +28,12 @@ export const nodeSlice = createSlice({
       const node = state.nodes.find((node) => node.id === action.payload.id);
       if (node) {
         node.data = { ...node.data, label: action.payload.newLabel };
-        updateLocalStorage(state.nodes);
+        updateLocalStorage(state.nodes, 'graphNodes');
       }
     },
     setNodes: (state, action: PayloadAction<Node[]>) => {
       state.nodes = action.payload;
-      updateLocalStorage(state.nodes);
+      updateLocalStorage(state.nodes, 'graphNodes');
     },
     resetSelection: (state) => {
       state.selectedNode = null;
@@ -54,6 +41,8 @@ export const nodeSlice = createSlice({
   }
 });
 
+export const { actions: nodeActions } = nodeSlice;
+export const { reducer: nodeReducer } = nodeSlice;
+
 export const { addNode, deleteNode, selectNode, updateNodeLabel, setNodes, resetSelection } =
   nodeSlice.actions;
-export const nodeReducer = nodeSlice.reducer;

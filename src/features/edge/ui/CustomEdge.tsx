@@ -1,10 +1,9 @@
-import { StateSchema } from '@/app/store/StateSchema';
-import { AppDispatch } from '@/app/store/store';
 import { cn } from '@/lib/utils';
 import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from '@xyflow/react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { getSelectedEdge } from '../selectors/getEdges';
 
-export default function CustomEdge({
+export function CustomEdge({
   id,
   sourceX,
   sourceY,
@@ -24,9 +23,8 @@ export default function CustomEdge({
     targetY,
     targetPosition
   });
-
-  const selectedEdgeId = useSelector((state: StateSchema) => state.edges.selectedEdge?.id);
-  const isSelected = id === selectedEdgeId;
+  const selectedEdge = useSelector(getSelectedEdge);
+  const isSelected = id === selectedEdge?.id;
 
   return (
     <>

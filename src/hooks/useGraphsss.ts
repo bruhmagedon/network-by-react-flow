@@ -1,11 +1,9 @@
-// useGraphs.ts
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { edgeSlice, selectEdge } from '@/features/edge/model/edgeSlice';
+import { selectEdge, edgeSlice } from '@/features/edge/model/edgeSlice';
+import { nodeSlice } from '@/features/node/model/nodeSlice';
 import { Edge } from '@xyflow/react';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch } from './useAppDispatch';
 import { useEdge } from './useEdge';
 import { useNode } from './useNode';
-import { nodeSlice } from '@/features/node/model/nodeSlice';
 
 export const useGraphs = () => {
   const { nodes, onNodesChange } = useNode();

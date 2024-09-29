@@ -1,23 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Edge } from '@xyflow/react';
-
-export interface EdgeSchema {
-  edges: Edge[];
-  selectedEdge: Edge | null;
-}
-
-const loadEdgesFromLocalStorage = (): Edge[] => {
-  const storedEdges = localStorage.getItem('graphEdges');
-  return storedEdges ? JSON.parse(storedEdges) : [];
-};
+import { EdgeSchema } from './EdgeSchema';
+import { loadFromLocalStorage, updateLocalStorage } from '@/lib/localStorage';
 
 const initialState: EdgeSchema = {
-  edges: loadEdgesFromLocalStorage(),
+  edges: loadFromLocalStorage('graphEdges'),
   selectedEdge: null
-};
-
-const updateLocalStorage = (edges: Edge[]) => {
-  localStorage.setItem('graphEdges', JSON.stringify(edges));
 };
 
 export const edgeSlice = createSlice({
@@ -26,11 +14,11 @@ export const edgeSlice = createSlice({
   reducers: {
     addEdge: (state, action: PayloadAction<Edge>) => {
       state.edges.push(action.payload);
-      updateLocalStorage(state.edges);
+      updateLocalStorage(state.edges, 'graphEdges');
     },
     setEdges: (state, action: PayloadAction<Edge[]>) => {
       state.edges = action.payload;
-      updateLocalStorage(state.edges);
+      updateLocalStorage(state.edges, 'graphEdges');
     },
     selectEdge: (state, action: PayloadAction<string | null>) => {
       state.selectedEdge = state.edges.find((edge) => edge.id === action.payload) || null;
@@ -38,13 +26,13 @@ export const edgeSlice = createSlice({
     deleteEdge: (state, action: PayloadAction<string>) => {
       state.edges = state.edges.filter((edge) => edge.id !== action.payload);
       state.selectedEdge = null;
-      updateLocalStorage(state.edges);
+      updateLocalStorage(state.edges, 'graphEdges');
     },
     updateEdgeLabel: (state, action: PayloadAction<{ id: string; newLabel: string }>) => {
       const edge = state.edges.find((edge) => edge.id === action.payload.id);
       if (edge) {
         edge.label = action.payload.newLabel;
-        updateLocalStorage(state.edges);
+        updateLocalStorage(state.edges, 'graphEdges');
       }
     },
     resetSelection: (state) => {
@@ -53,6 +41,8 @@ export const edgeSlice = createSlice({
   }
 });
 
+export const { actions: edgeActions } = edgeSlice;
+export const { reducer: edgeReducer } = edgeSlice;
+
 export const { addEdge, setEdges, selectEdge, deleteEdge, updateEdgeLabel, resetSelection } =
   edgeSlice.actions;
-export const edgeReducer = edgeSlice.reducer;

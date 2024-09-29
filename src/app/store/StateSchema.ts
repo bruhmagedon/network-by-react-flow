@@ -1,5 +1,5 @@
-import { EdgeSchema } from '@/features/edge/edgeSlice';
-import { NodeSchema } from '@/features/node/nodeSlice';
+import { EdgeSchema } from '@/features/edge';
+import { NodeSchema } from '@/features/node/model/nodeSlice';
 
 export interface StateSchema {
   nodes: NodeSchema;

@@ -1,5 +1,5 @@
 import { StateSchema } from '@/app/store/StateSchema';
-import { AppDispatch } from '@/app/store/store';
+import { useAppDispatch } from '@/hooks/useAppDispatch';
 import {
   addEdge,
   applyEdgeChanges,
@@ -16,11 +16,11 @@ import {
   updateEdgeLabel as updateEdgeLabelAction,
   // deleteEdgesByNodeId as deleteEdgesByNodeIdAction,
   setEdges
-} from '@/features/edge/edgeSlice';
-import { useDispatch, useSelector } from 'react-redux';
+} from '@/features/edge/model/edgeSlice';
+import { useSelector } from 'react-redux';
 
 export const useEdge = () => {
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const edgesFromStore = useSelector((state: StateSchema) => state.edges.edges);
 
   const [edges, setEdgesState, onEdgesChange] = useEdgesState(edgesFromStore);

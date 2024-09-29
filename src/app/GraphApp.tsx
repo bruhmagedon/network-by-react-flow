@@ -3,9 +3,9 @@ import '@xyflow/react/dist/style.css';
 import { Sidebar } from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
-import { nodeTypes } from '@/components/graph/GraphSchema';
 import { useGraphs } from '@/hooks/useGraphs';
-import { edgeTypes } from '@/components/edge/EdgeSchema';
+import { edgeTypes } from '@/features/edge';
+import { nodeTypes } from '@/features/node';
 
 const GraphApp = () => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onEdgeClick, resetSelection } =
