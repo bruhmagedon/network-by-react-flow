@@ -1,0 +1,3 @@
+interface CounterSchema {
+  value: number;
+}
