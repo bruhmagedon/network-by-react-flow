@@ -1,16 +1,16 @@
 import { Edge, Node, Panel } from '@xyflow/react';
 import { Button } from './ui/button';
-import { dijkstra } from '@/utils/dijkstra';
-import { useState } from 'react';
+import { useNode } from '@/hooks/useNode';
 
-interface NavbarProps {
-  className?: string;
-  nodes: Node[];
-  edges: Edge[];
-  addNode: () => void;
-}
+// interface NavbarProps {
+//   className?: string;
+//   nodes: Node[];
+//   edges: Edge[];
+//   addNode: () => void;
+// }
 
-export const Navbar = ({ addNode }: NavbarProps) => {
+export const Navbar = () => {
+  const { addNode } = useNode();
   return (
     <Panel
       position='bottom-center'
