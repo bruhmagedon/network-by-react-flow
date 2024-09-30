@@ -96,33 +96,3 @@ const TableCaption = React.forwardRef<
 TableCaption.displayName = 'TableCaption';
 
 export { Table, TableHeader, TableBody, TableFooter, TableHead, TableRow, TableCell, TableCaption };
-
-{
-  /* <div className='flex items-center justify-center space-x-2'>
-<Button variant='outline' size='icon' className='h-8 w-8 shrink-0 rounded-full'>
-  <MinusIcon className='h-4 w-4' />
-  <span className='sr-only'>Decrease</span>
-</Button> */
-}
-{
-  /* // Тут должно отображаться количество узлов (ячеек и столбцов матрицы. ) */
-}
-{
-  /* Сверху и снизу кнопки уменьшить количество на один и увеличить */
-}
-{
-  /* буквально увеличивается матрица по нажатию на кнопку и также синхронизируется с ReactFlow и моделью графа */
-}
-{
-  /* например, нажали на минус, удалился один столбец (последний) и одна строка (последняя) - также удался узел и все дуги с ним связанный на графе */
-}
-{
-  /* Также должна быть валидация (от 1 до 10 включительно, то есть максимум 10 столбцов и 10 строк => 10 узлов) */
-}
-{
-  /* <Button variant='outline' size='icon' className='h-8 w-8 shrink-0 rounded-full'>
-  <PlusIcon className='h-4 w-4' />
-  <span className='sr-only'>Increase</span>
-</Button>
-</div> */
-}
