@@ -1,39 +1,45 @@
-import { StateSchema } from '@/app/store/StateSchema';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
+import { edgeActions } from '@/features/edge';
+import { getEdges } from '@/features/edge/selectors/getEdges';
+import { nodeActions } from '@/features/node';
+import { useAppDispatch } from '@/hooks/redux/useAppDispatch';
 import {
   addEdge,
   applyEdgeChanges,
   Connection,
   Edge,
   EdgeChange,
-  MarkerType,
   useEdgesState
 } from '@xyflow/react';
 import { useEffect } from 'react';
-import {
-  addEdge as addEdgeAction,
-  deleteEdge as deleteEdgeAction,
-  updateEdgeLabel as updateEdgeLabelAction,
-  // deleteEdgesByNodeId as deleteEdgesByNodeIdAction,
-  setEdges
-} from '@/features/edge/model/edgeSlice';
 import { useSelector } from 'react-redux';
+import { useCreateGraphEntity } from './useCreateGraphEntity';
 
 export const useEdge = () => {
   const dispatch = useAppDispatch();
-  const edgesFromStore = useSelector((state: StateSchema) => state.edges.edges);
+  const edgesFromStore = useSelector(getEdges);
 
-  const [edges, setEdgesState, onEdgesChange] = useEdgesState(edgesFromStore);
+  const { createEdge } = useCreateGraphEntity();
+  const [edges, setEdgesState] = useEdgesState(edgesFromStore);
 
   useEffect(() => {
     setEdgesState(edgesFromStore);
   }, [edgesFromStore, setEdgesState]);
 
-  // * ЭДЖИ
+  const onConnect = (params: Edge | Connection) => {
+    const newEdge = createEdge(params);
+    setEdgesState((eds) => addEdge(newEdge, eds));
+    dispatch(edgeActions.addEdge(newEdge));
+  };
+
+  const onEdgeClick = (_e: React.MouseEvent, edge: Edge) => {
+    dispatch(nodeActions.resetSelection());
+    dispatch(edgeActions.selectEdge(edge.id));
+  };
+
   const deleteEdge = (id: string) => {
     const updatedEdges = edges.filter((edge) => edge.id !== id);
     setEdgesState(updatedEdges);
-    dispatch(deleteEdgeAction(id));
+    dispatch(edgeActions.deleteEdge(id));
   };
 
   const updateEdgeLabel = (id: string, newLabel: string) => {
@@ -41,38 +47,25 @@ export const useEdge = () => {
       edge.id === id ? { ...edge, label: newLabel } : edge
     );
     setEdgesState(updatedEdges);
-    dispatch(updateEdgeLabelAction({ id, newLabel }));
+    dispatch(edgeActions.updateEdgeLabel({ id, newLabel }));
   };
 
-  const onConnect = (params: Edge | Connection) => {
-    const newEdge: Edge = {
-      ...params,
-      id: `edge-${params.source}-${params.target}`,
-      label: '1',
-      type: 'customEdge',
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 10,
-        height: 10,
-        color: '#202020'
-      },
-      style: {
-        strokeWidth: 2,
-        stroke: '#202020'
-      }
-    };
-    setEdgesState((eds) => addEdge(newEdge, eds));
-    dispatch(addEdgeAction(newEdge));
+  // Новая функция для массового обновления дуг
+  const setEdges = (newEdges: Edge[]) => {
+    setEdgesState(newEdges); // Обновляем локальное состояние
+    dispatch(edgeActions.setEdges(newEdges)); // Обновляем состояние в Redux и локальное хранилище
   };
 
   const onEdgesChangeCallback = (changes: EdgeChange[]) => {
     const updatedEdges = applyEdgeChanges(changes, edges);
     setEdgesState([...updatedEdges]);
-    dispatch(setEdges([...updatedEdges]));
+    dispatch(edgeActions.setEdges([...updatedEdges]));
   };
 
   return {
+    onEdgeClick,
     edges,
+    setEdges, // Возвращаем функцию setEdges
     onEdgesChange: onEdgesChangeCallback,
     deleteEdge,
     updateEdgeLabel,

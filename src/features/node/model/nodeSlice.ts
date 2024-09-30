@@ -43,6 +43,3 @@ export const nodeSlice = createSlice({
 
 export const { actions: nodeActions } = nodeSlice;
 export const { reducer: nodeReducer } = nodeSlice;
-
-export const { addNode, deleteNode, selectNode, updateNodeLabel, setNodes, resetSelection } =
-  nodeSlice.actions;

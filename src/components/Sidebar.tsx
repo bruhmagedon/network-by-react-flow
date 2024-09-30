@@ -1,4 +1,5 @@
-import { StateSchema } from '@/app/store/StateSchema';
+import { getSelectedEdge } from '@/features/edge/selectors/getEdges';
+import { getSelectedNode } from '@/features/node/selectors/getNodes';
 import { useEdge } from '@/hooks/useEdge';
 import { useNode } from '@/hooks/useNode';
 import { Panel } from '@xyflow/react';
@@ -9,8 +10,8 @@ export const Sidebar = () => {
   const { deleteNode, updateNodeLabel } = useNode();
   const { deleteEdge, updateEdgeLabel } = useEdge();
 
-  const selectedNode = useSelector((state: StateSchema) => state.nodes.selectedNode);
-  const selectedEdge = useSelector((state: StateSchema) => state.edges.selectedEdge);
+  const selectedNode = useSelector(getSelectedNode);
+  const selectedEdge = useSelector(getSelectedEdge);
 
   const [newLabel, setNewLabel] = useState('');
 

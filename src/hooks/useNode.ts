@@ -1,18 +1,19 @@
-import { StateSchema } from '@/app/store/StateSchema';
-import { useAppDispatch } from '@/hooks/useAppDispatch';
-import { useNodesState, Node, NodeChange, applyNodeChanges } from '@xyflow/react';
+import { useAppDispatch } from '@/hooks/redux/useAppDispatch';
+import { useNodesState, NodeChange, applyNodeChanges } from '@xyflow/react';
 
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { edgeSlice } from '@/features/edge/model/edgeSlice';
+import { edgeActions, edgeSlice } from '@/features/edge/model/edgeSlice';
 import { getNodes, nodeActions } from '@/features/node';
 import { getEdges } from '@/features/edge';
+import { useCreateGraphEntity } from './useCreateGraphEntity';
 
 export const useNode = () => {
   const dispatch = useAppDispatch();
   const nodesFromStore = useSelector(getNodes);
   const edgesFromStore = useSelector(getEdges);
 
+  const { createNode } = useCreateGraphEntity();
   const [nodes, setNodesState] = useNodesState(nodesFromStore);
 
   useEffect(() => {
@@ -20,20 +21,18 @@ export const useNode = () => {
   }, [nodesFromStore, setNodesState]);
 
   const addNode = () => {
-    const newNode: Node = {
-      id: `node-${nodes.length + 1}`,
-      type: 'customNode',
-      data: { label: `Node ${nodes.length + 1}` },
-      // TODO придумать какие то новые расстановки позиций
-      position: { x: Math.random() * 400, y: Math.random() * 400 }
-    };
+    const newNode = createNode(nodes);
     setNodesState((nds) => [...nds, newNode]);
     dispatch(nodeActions.addNode(newNode));
   };
 
+  const onNodeClick = (id: string) => {
+    dispatch(edgeActions.resetSelection());
+    dispatch(nodeActions.selectNode(id));
+  };
+
   const deleteNode = (id: string) => {
     const updatedNodes = nodes.filter((node) => node.id !== id);
-    // Удаляем все эджи, связанные с нодой
     const updatedEdges = edgesFromStore.filter((edge) => edge.source !== id && edge.target !== id);
     setNodesState(updatedNodes);
     dispatch(nodeActions.deleteNode(id));
@@ -56,6 +55,7 @@ export const useNode = () => {
 
   return {
     nodes,
+    onNodeClick,
     onNodesChange: onNodesChangeCallback,
     addNode,
     deleteNode,
