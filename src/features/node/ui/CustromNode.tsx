@@ -20,8 +20,8 @@ export const CustomNode = ({ id, data }: CustomNodeProps) => {
     // TODO проблемы с селектом при нажатии на текст (чекнуть в чем может быть дело)
     <div
       className={cn(
-        isSelected && 'border-2 border-cyan-700',
-        'w-16 h-16 bg-cyan-500 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-teal-500'
+        isSelected && 'border-2 border-black',
+        'w-16 h-16 bg-primary text-primary-foreground font-semibold rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-amber-500'
       )}
       onClick={() => onNodeClick(id)}
     >
