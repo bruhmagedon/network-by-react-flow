@@ -1,6 +1,6 @@
 // GraphApp.tsx
 import '@xyflow/react/dist/style.css';
-import { Sidebar } from '@/components/Sidebar';
+import Sidebar from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
 import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
 import { useGraphs } from '@/hooks/useGraphs';

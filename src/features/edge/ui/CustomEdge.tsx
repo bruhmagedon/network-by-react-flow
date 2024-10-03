@@ -1,5 +1,11 @@
 import { cn } from '@/lib/utils';
-import { BaseEdge, EdgeLabelRenderer, EdgeProps, getBezierPath } from '@xyflow/react';
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  EdgeProps,
+  getBezierPath,
+  getStraightPath
+} from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import { getSelectedEdge } from '../selectors/getEdges';
 
@@ -15,13 +21,11 @@ export function CustomEdge({
   style = {},
   markerEnd
 }: EdgeProps) {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath, labelX, labelY] = getStraightPath({
     sourceX,
     sourceY,
-    sourcePosition,
     targetX,
-    targetY,
-    targetPosition
+    targetY
   });
   const selectedEdge = useSelector(getSelectedEdge);
   const isSelected = id === selectedEdge?.id;

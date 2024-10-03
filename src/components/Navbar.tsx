@@ -1,7 +1,7 @@
 import { Panel } from '@xyflow/react';
 import { Button } from './ui/button';
 import { useNode } from '@/hooks/useNode';
-import TableDrawer from './TableDrawer/TableDrawer';
+import TableDrawer from './Drawer/Drawer';
 
 export const Navbar = () => {
   const { addNode } = useNode();

@@ -13,8 +13,15 @@ export const edgeSlice = createSlice({
   initialState,
   reducers: {
     addEdge: (state, action: PayloadAction<Edge>) => {
-      state.edges.push(action.payload);
-      updateLocalStorage(state.edges, 'graphEdges');
+      // Проверяем, что дуга уже не существует
+      const edgeExists = state.edges.some(
+        (edge) => edge.source === action.payload.source && edge.target === action.payload.target
+      );
+      if (!edgeExists && parseFloat(action.payload.label as string) >= 0) {
+        // Проверка на неотрицательные веса
+        state.edges.push(action.payload);
+        updateLocalStorage(state.edges, 'graphEdges');
+      }
     },
     setEdges: (state, action: PayloadAction<Edge[]>) => {
       state.edges = action.payload;
@@ -30,7 +37,8 @@ export const edgeSlice = createSlice({
     },
     updateEdgeLabel: (state, action: PayloadAction<{ id: string; newLabel: string }>) => {
       const edge = state.edges.find((edge) => edge.id === action.payload.id);
-      if (edge) {
+      if (edge && parseFloat(action.payload.newLabel) >= 0) {
+        // Проверка на неотрицательные веса
         edge.label = action.payload.newLabel;
         updateLocalStorage(state.edges, 'graphEdges');
       }

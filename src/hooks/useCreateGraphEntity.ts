@@ -1,16 +1,20 @@
+import { NodeData } from '@/features/node/model/NodeSchema';
 import { Connection, Edge, MarkerType, Node } from '@xyflow/react';
+import { v4 as uuidv4 } from 'uuid'; // Импортируем метод для генерации уникальных ID
 
 export const useCreateGraphEntity = () => {
+  // Функция для создания уникального эджа
+  // Модифицируем функцию createEdge, чтобы учитывать введённый вес
   const createEdge = (params: Edge | Connection): Edge => {
     return {
       ...params,
-      id: `edge-${params.source}-${params.target}`,
-      label: '1',
+      id: `edge-${uuidv4()}`, // Генерация уникального id для эджа
+      label: '1', // Используем введённый вес
       type: 'customEdge',
       markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 10,
-        height: 10,
+        type: MarkerType.Arrow,
+        width: 15,
+        height: 15,
         color: '#202020'
       },
       style: {
@@ -20,12 +24,12 @@ export const useCreateGraphEntity = () => {
     };
   };
 
-  const createNode = (nodes: Node[]): Node => {
+  // Функция для создания уникальной ноды
+  const createNode = (nodes: Node<NodeData>[]): Node<NodeData> => {
     return {
-      id: `node-${nodes.length + 1}`,
+      id: `node-${uuidv4()}`,
       type: 'customNode',
-      data: { label: `Node ${nodes.length + 1}` },
-      // TODO придумать какие то новые расстановки позиций
+      data: { label: `Node ${nodes.length + 1}` }, // Убедимся, что label есть в data
       position: { x: Math.random() * 400, y: Math.random() * 400 }
     };
   };

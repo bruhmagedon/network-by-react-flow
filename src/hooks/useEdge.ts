@@ -26,9 +26,15 @@ export const useEdge = () => {
   }, [edgesFromStore, setEdgesState]);
 
   const onConnect = (params: Edge | Connection) => {
-    const newEdge = createEdge(params);
-    setEdgesState((eds) => addEdge(newEdge, eds));
-    dispatch(edgeActions.addEdge(newEdge));
+    const edgeExists = edges.some(
+      (edge) => edge.source === params.source && edge.target === params.target
+    );
+
+    if (!edgeExists) {
+      const newEdge = createEdge(params);
+      setEdgesState((eds) => addEdge(newEdge, eds));
+      dispatch(edgeActions.addEdge(newEdge));
+    }
   };
 
   const onEdgeClick = (_e: React.MouseEvent, edge: Edge) => {
@@ -44,7 +50,12 @@ export const useEdge = () => {
 
   const updateEdgeLabel = (id: string, newLabel: string) => {
     const updatedEdges = edges.map((edge) =>
-      edge.id === id ? { ...edge, label: newLabel } : edge
+      edge.id === id
+        ? {
+            ...edge,
+            label: newLabel // Создаем новую копию объекта с измененным label
+          }
+        : edge
     );
     setEdgesState(updatedEdges);
     dispatch(edgeActions.updateEdgeLabel({ id, newLabel }));
