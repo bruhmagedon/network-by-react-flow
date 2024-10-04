@@ -38,21 +38,23 @@ export const useHighlightEdges = () => {
   };
 
   const resetPathEdges = () => {
-    const resetEdges = edges.map((edge) => ({
-      ...edge,
-      animated: false,
-      style: {
-        color: '#dedede',
-        strokeWidth: 2,
-        strokeDasharray: 'none'
-      },
-      markerEnd: {
-        type: MarkerType.Arrow,
-        width: 15,
-        height: 15,
-        color: '#dedede'
-      }
-    }));
+    const resetEdges = edges.map((edge) => {
+      return {
+        ...edge,
+        animated: false,
+        style: {
+          stroke: '#dedede',
+          strokeWidth: 2,
+          strokeDasharray: 'none'
+        },
+        markerEnd: {
+          type: MarkerType.Arrow,
+          width: 15,
+          height: 15,
+          color: '#dedede'
+        }
+      };
+    });
 
     dispatch(edgeActions.setEdges(resetEdges));
   };

@@ -38,35 +38,39 @@ export const NodeTable = () => {
   }, [syncMatrixWithGraph]);
 
   // Обработка изменения значения в таблице
+  // Новый handleMatrixChange с отложенной синхронизацией глобального состояния
   const handleMatrixChange = useCallback(
     (rowIndex: number, colIndex: number, newWeight: number) => {
       setData((prevData) => {
-        const updatedData = [...prevData]; // Делаем копию данных, чтобы избежать потери фокуса
-        updatedData[rowIndex] = [...prevData[rowIndex]]; // Копируем изменённую строку
-        updatedData[rowIndex][colIndex] = newWeight; // Обновляем конкретное значение в матрице
+        const updatedData = [...prevData];
+        updatedData[rowIndex] = [...updatedData[rowIndex]]; // Обновляем конкретную строку
+        updatedData[rowIndex][colIndex] = newWeight;
 
         const sourceNode = nodes[rowIndex];
         const targetNode = nodes[colIndex];
         const oldWeight = prevData[rowIndex][colIndex];
 
-        if (oldWeight === 0 && newWeight > 0) {
-          onConnect({
-            source: sourceNode.id,
-            target: targetNode.id,
-            sourceHandle: null,
-            targetHandle: null
-          });
-        } else if (oldWeight > 0 && newWeight === 0) {
-          const edgeToDelete = edges.find(
-            (edge) => edge.source === sourceNode.id && edge.target === targetNode.id
-          );
-          if (edgeToDelete) deleteEdge(edgeToDelete.id);
-        } else if (oldWeight !== newWeight) {
-          const edgeToUpdate = edges.find(
-            (edge) => edge.source === sourceNode.id && edge.target === targetNode.id
-          );
-          if (edgeToUpdate) updateEdgeLabel(edgeToUpdate.id, newWeight.toString());
-        }
+        // Откладываем обновление графа с использованием setTimeout
+        setTimeout(() => {
+          if (oldWeight === 0 && newWeight > 0) {
+            onConnect({
+              source: sourceNode.id,
+              target: targetNode.id,
+              sourceHandle: null,
+              targetHandle: null
+            });
+          } else if (oldWeight > 0 && newWeight === 0) {
+            const edgeToDelete = edges.find(
+              (edge) => edge.source === sourceNode.id && edge.target === targetNode.id
+            );
+            if (edgeToDelete) deleteEdge(edgeToDelete.id);
+          } else if (oldWeight !== newWeight) {
+            const edgeToUpdate = edges.find(
+              (edge) => edge.source === sourceNode.id && edge.target === targetNode.id
+            );
+            if (edgeToUpdate) updateEdgeLabel(edgeToUpdate.id, newWeight.toString());
+          }
+        }, 0);
 
         return updatedData;
       });
