@@ -2,10 +2,15 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { NodeData, NodeSchema } from './NodeSchema';
 import { Node } from '@xyflow/react';
 import { loadFromLocalStorage, updateLocalStorage } from '@/lib/localStorage';
+import { StateSchema } from '@/app/store/StateSchema';
 
 const initialState: NodeSchema = {
   nodes: loadFromLocalStorage('graphNodes'),
-  selectedNode: null
+  selectedNode: null,
+  selectedNodesForPath: {
+    startNodeId: null,
+    endNodeId: null
+  }
 };
 
 export const MAX_NODES = 10;
@@ -46,9 +51,29 @@ export const nodeSlice = createSlice({
     },
     resetSelection: (state) => {
       state.selectedNode = null;
+    },
+    selectNodeForPath: (state, action: PayloadAction<string>) => {
+      const { startNodeId, endNodeId } = state.selectedNodesForPath;
+      if (!startNodeId) {
+        state.selectedNodesForPath.startNodeId = action.payload;
+      } else if (!endNodeId && action.payload !== startNodeId) {
+        state.selectedNodesForPath.endNodeId = action.payload;
+      }
+    },
+    resetSelectedNodesForPath: (state) => {
+      state.selectedNodesForPath = { startNodeId: null, endNodeId: null };
+    },
+    resetPathSelection: (state) => {
+      state.selectedNodesForPath.startNodeId = null;
+      state.selectedNodesForPath.endNodeId = null;
     }
   }
 });
 
 export const { actions: nodeActions } = nodeSlice;
 export const { reducer: nodeReducer } = nodeSlice;
+
+export const getNodeLabelById = (state: StateSchema, id: string | null): string | null => {
+  const node = state.nodes.nodes.find((node: Node) => node.id === id);
+  return node ? (node.data.label as string) : null;
+};

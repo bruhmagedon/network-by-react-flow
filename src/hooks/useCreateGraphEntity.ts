@@ -15,11 +15,11 @@ export const useCreateGraphEntity = () => {
         type: MarkerType.Arrow,
         width: 15,
         height: 15,
-        color: '#202020'
+        color: '#dedede'
       },
       style: {
         strokeWidth: 2,
-        stroke: '#202020'
+        stroke: '#dedede'
       }
     };
   };

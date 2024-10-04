@@ -32,7 +32,11 @@ export function CustomEdge({
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge
+        path={edgePath}
+        markerEnd={markerEnd}
+        style={style} // Применяем стиль из state
+      />
       <EdgeLabelRenderer>
         <div
           style={{
