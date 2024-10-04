@@ -9,10 +9,11 @@ export const useHighlightEdges = () => {
 
   const highlightPathEdges = (path: string[]) => {
     const updatedEdges = edges.map((edge) => {
+      // Проверяем, что оба конца дуги находятся на пути и что направление дуги соответствует порядку пути
       const isPathEdge =
         path.includes(edge.source) &&
         path.includes(edge.target) &&
-        Math.abs(path.indexOf(edge.source) - path.indexOf(edge.target)) === 1;
+        path.indexOf(edge.source) === path.indexOf(edge.target) - 1; // Проверка на направление
 
       if (isPathEdge) {
         return {
@@ -38,23 +39,21 @@ export const useHighlightEdges = () => {
   };
 
   const resetPathEdges = () => {
-    const resetEdges = edges.map((edge) => {
-      return {
-        ...edge,
-        animated: false,
-        style: {
-          stroke: '#dedede',
-          strokeWidth: 2,
-          strokeDasharray: 'none'
-        },
-        markerEnd: {
-          type: MarkerType.Arrow,
-          width: 15,
-          height: 15,
-          color: '#dedede'
-        }
-      };
-    });
+    const resetEdges = edges.map((edge) => ({
+      ...edge,
+      animated: false,
+      style: {
+        stroke: '#dedede',
+        strokeWidth: 2,
+        strokeDasharray: 'none'
+      },
+      markerEnd: {
+        type: MarkerType.Arrow,
+        width: 15,
+        height: 15,
+        color: '#dedede'
+      }
+    }));
 
     dispatch(edgeActions.setEdges(resetEdges));
   };

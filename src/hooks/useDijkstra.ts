@@ -19,7 +19,7 @@ export const useDijkstra = () => {
 
   const findShortestPath = (startNodeId: string, endNodeId: string): string[] => {
     console.log(
-      'Запуск алгоритма Dijkstra от',
+      'Запуск алгоритма Дейкстра от',
       getNodeLabelById(startNodeId),
       'до',
       getNodeLabelById(endNodeId)
@@ -32,7 +32,7 @@ export const useDijkstra = () => {
 
     // Инициализация расстояний и непосещённых узлов
     nodes.forEach((node) => {
-      distances[node.id] = Infinity; // Устанавливаем расстояние для всех узлов как бесконечность
+      distances[node.id] = Infinity; // Растояние пока бесконечность (узел недостижим)
       previous[node.id] = null; // Предыдущий узел для каждого узла как null
       unvisitedNodes.add(node.id); // Добавляем узел в множество непосещённых
     });
@@ -44,6 +44,7 @@ export const useDijkstra = () => {
     );
     console.log('Инициализированные расстояния:', labeledDistances);
 
+    // Пока не посетили все узлы
     while (unvisitedNodes.size > 0) {
       // Находим узел с минимальным расстоянием среди непосещенных
       const currentNodeId = Array.from(unvisitedNodes).reduce(
@@ -100,6 +101,9 @@ export const useDijkstra = () => {
     }
 
     console.log('Кратчайший путь:', path.map((nodeId) => getNodeLabelById(nodeId)).join(' → '));
+    if (path.length == 0) {
+      alert('Невозможно построить маршрут по этим нодам');
+    }
     highlightPathEdges(path);
     return path;
   };
