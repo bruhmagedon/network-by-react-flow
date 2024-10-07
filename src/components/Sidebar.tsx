@@ -21,6 +21,7 @@ const Sidebar = () => {
 
   const [newLabel, setNewLabel] = useState('');
   const [weights, setWeights] = useState<{ [key: string]: string }>({}); // Храним вес для каждой дуги
+  const [error, setError] = useState<string | null>(null);
 
   // Обновление состояния весов при выборе новой дуги
   useEffect(() => {
@@ -56,8 +57,9 @@ const Sidebar = () => {
     if (isValidWeight(weight)) {
       updateEdgeLabel(id, weight);
       setWeights((prev) => ({ ...prev, [id]: '' })); // Сбрасываем поле после изменения для этой дуги
+      setError(null);
     } else {
-      alert('Введите положительное число больше 0');
+      setError('Вес должен быть положительным числом.');
     }
   };
 
@@ -143,6 +145,7 @@ const Sidebar = () => {
         onChange={(e) => handleWeightChange(edge.id, e.target.value)} // Изменяем вес для конкретной дуги
         placeholder='Новый вес дуги'
       />
+      {error && <span className='text-xs text-red-500'>{error}</span>}
       <Button onClick={() => handleUpdateWeight(edge.id)} size='sm' className='w-full mt-2'>
         Изменить вес
       </Button>

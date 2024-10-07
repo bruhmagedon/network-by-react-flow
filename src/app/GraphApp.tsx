@@ -2,7 +2,7 @@
 import '@xyflow/react/dist/style.css';
 import Sidebar from '@/components/Sidebar';
 import { Navbar } from '@/components/Navbar';
-import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
+import { Background, Controls, ReactFlow } from '@xyflow/react';
 import { useGraphs } from '@/hooks/useGraphs';
 import { edgeTypes } from '@/features/edge';
 import { nodeTypes } from '@/features/node';
@@ -29,7 +29,7 @@ const GraphApp = () => {
         <Navbar />
         <Background className='bg-white' gap={12} size={1} />
         <Controls />
-        <MiniMap />
+        {/* <MiniMap /> */}
       </ReactFlow>
     </div>
   );

@@ -1,10 +1,8 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { edgeActions, getEdges } from '@/features/edge';
+import { useSelector } from 'react-redux';
+import { getEdges } from '@/features/edge';
 import { Node, Edge } from '@xyflow/react';
-import { StateSchema } from '@/app/store/StateSchema';
 import { getNodes } from '@/features/node';
 import { useHighlightEdges } from './useHighlightEdges';
-import { NodeData } from '@/features/node/model/NodeSchema';
 
 export const useDijkstra = () => {
   const nodes: Node[] = useSelector(getNodes);
@@ -12,17 +10,20 @@ export const useDijkstra = () => {
   const { highlightPathEdges } = useHighlightEdges();
 
   // Вспомогательная функция для получения названия узла по его ID
-  const getNodeLabelById = (nodeId: string) => {
+  const getNodeLabeForPath = (nodeId: string) => {
     const node = nodes.find((node) => node.id === nodeId);
     return (node?.data.label as string) || nodeId; // Если узел не найден, возвращаем ID
   };
 
-  const findShortestPath = (startNodeId: string, endNodeId: string): string[] => {
+  const findShortestPath = (
+    startNodeId: string,
+    endNodeId: string
+  ): { path: string[]; totalWeight: number } => {
     console.log(
       'Запуск алгоритма Дейкстра от',
-      getNodeLabelById(startNodeId),
+      getNodeLabeForPath(startNodeId),
       'до',
-      getNodeLabelById(endNodeId)
+      getNodeLabeForPath(endNodeId)
     );
 
     // Типизация для хранения расстояний и предыдущих узлов
@@ -32,19 +33,18 @@ export const useDijkstra = () => {
 
     // Инициализация расстояний и непосещённых узлов
     nodes.forEach((node) => {
-      distances[node.id] = Infinity; // Растояние пока бесконечность (узел недостижим)
+      distances[node.id] = Infinity; // Расстояние пока бесконечность (узел недостижим)
       previous[node.id] = null; // Предыдущий узел для каждого узла как null
       unvisitedNodes.add(node.id); // Добавляем узел в множество непосещённых
     });
 
     distances[startNodeId] = 0; // Устанавливаем начальное расстояние для стартового узла
-    // Преобразуем `distances` для логирования с названиями узлов
+
     const labeledDistances = Object.fromEntries(
-      Object.entries(distances).map(([id, dist]) => [getNodeLabelById(id), dist])
+      Object.entries(distances).map(([id, dist]) => [getNodeLabeForPath(id), dist])
     );
     console.log('Инициализированные расстояния:', labeledDistances);
 
-    // Пока не посетили все узлы
     while (unvisitedNodes.size > 0) {
       // Находим узел с минимальным расстоянием среди непосещенных
       const currentNodeId = Array.from(unvisitedNodes).reduce(
@@ -54,7 +54,7 @@ export const useDijkstra = () => {
 
       console.log(
         'Текущий узел:',
-        getNodeLabelById(startNodeId),
+        getNodeLabeForPath(currentNodeId),
         'с расстоянием:',
         distances[currentNodeId]
       );
@@ -74,16 +74,16 @@ export const useDijkstra = () => {
           const alt = distances[currentNodeId] + parseFloat(edge.label as string);
           console.log(
             'Рассматриваем ребро',
-            getNodeLabelById(edge.source),
+            getNodeLabeForPath(edge.source),
             '→',
-            getNodeLabelById(edge.target),
+            getNodeLabeForPath(edge.target),
             'с весом',
             edge.label
           );
           if (alt < distances[edge.target]) {
             distances[edge.target] = alt; // Обновляем расстояние до узла
             previous[edge.target] = currentNodeId; // Обновляем предыдущий узел
-            console.log('Обновляем расстояние для', getNodeLabelById(edge.target), 'до', alt);
+            console.log('Обновляем расстояние для', getNodeLabeForPath(edge.target), 'до', alt);
           }
         });
     }
@@ -91,22 +91,37 @@ export const useDijkstra = () => {
     // Восстанавливаем путь от конечного узла до начального
     const path: string[] = [];
     let currentNodeId = endNodeId;
+    let totalWeight = 0; // Общий вес пути
+
     while (previous[currentNodeId]) {
       path.unshift(currentNodeId);
+      const edge = edges.find(
+        (edge) => edge.source === previous[currentNodeId] && edge.target === currentNodeId
+      );
+      // Преобразуем label в число для расчета общего веса
+      const weight = edge ? parseFloat(String(edge.label)) : 0;
+      totalWeight += weight;
+
       currentNodeId = previous[currentNodeId]!;
     }
 
     if (currentNodeId === startNodeId) {
-      path.unshift(startNodeId); // Если достигли начального узла, добавляем его в путь
+      path.unshift(startNodeId);
     }
 
-    console.log('Кратчайший путь:', path.map((nodeId) => getNodeLabelById(nodeId)).join(' → '));
-    if (path.length == 0) {
+    console.log(
+      'Кратчайший путь:',
+      path.map((nodeId) => getNodeLabeForPath(nodeId)).join(' → '),
+      'с общим весом:',
+      totalWeight
+    );
+    if (path.length === 0) {
       alert('Невозможно построить маршрут по этим нодам');
     }
     highlightPathEdges(path);
-    return path;
+
+    return { path, totalWeight };
   };
 
-  return { findShortestPath };
+  return { findShortestPath, getNodeLabeForPath };
 };
