@@ -7,7 +7,10 @@ export const useHighlightEdges = () => {
   const edges: Edge[] = useSelector(getEdges);
   const dispatch = useDispatch();
 
-  const highlightPathEdges = (path: string[]) => {
+  const highlightPathEdges = (path: string[], algorithm: 'dijkstra' | 'floyd' | 'compare') => {
+    const strokeColor =
+      algorithm === 'dijkstra' ? 'blue' : algorithm === 'floyd' ? 'red' : 'purple'; // Цвет для сравнения
+
     const updatedEdges = edges.map((edge) => {
       // Проверяем, что оба конца дуги находятся на пути и что направление дуги соответствует порядку пути
       const isPathEdge =
@@ -20,15 +23,15 @@ export const useHighlightEdges = () => {
           ...edge,
           animated: true,
           style: {
-            stroke: 'blue',
+            stroke: strokeColor,
             strokeWidth: 2.5,
             strokeDasharray: '5,5'
           },
           markerEnd: {
             type: MarkerType.Arrow,
             width: 15,
-            height: 15,
-            color: 'blue'
+            height: 20,
+            color: strokeColor
           }
         };
       }

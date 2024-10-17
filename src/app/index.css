@@ -98,3 +98,29 @@
     -6px 2px 15px rgba(233, 42, 103, 0.3);
   font-family: monospace;
 }
+
+/* Анимация для синего подчеркивания (Дейкстра) */
+.animate-dash-blue {
+  width: 100%;
+  background-image: linear-gradient(to right, blue 50%, transparent 50%);
+  background-size: 8px 2px;
+  animation: dashMove 1s linear infinite;
+}
+
+/* Анимация для красного подчеркивания (Флойд) */
+.animate-dash-red {
+  width: 100%;
+  background-image: linear-gradient(to right, red 50%, transparent 50%);
+  background-size: 8px 2px;
+  animation: dashMove 1s linear infinite;
+}
+
+/* Общая анимация для движения */
+@keyframes dashMove {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 8px 0;
+  }
+}

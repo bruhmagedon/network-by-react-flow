@@ -12,13 +12,19 @@ import {
 } from '../ui/drawer';
 import { useNode } from '@/hooks/useNode';
 
-const TableDrawer = () => {
+interface TableDrawerProps {
+  disabled?: boolean;
+}
+
+const TableDrawer = ({ disabled }: TableDrawerProps) => {
   const { nodes, addNode } = useNode();
 
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant='outline'>Матрица инцидентности</Button>
+        <Button variant='outline' disabled={disabled}>
+          Матрица инцидентности
+        </Button>
       </DrawerTrigger>
       <DrawerContent>
         <div className='mx-auto max-w-[1000px]'>

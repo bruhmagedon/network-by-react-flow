@@ -6,10 +6,19 @@ import { Background, Controls, ReactFlow } from '@xyflow/react';
 import { useGraphs } from '@/hooks/useGraphs';
 import { edgeTypes } from '@/features/edge';
 import { nodeTypes } from '@/features/node';
+import { useEffect } from 'react';
+import { useHighlightEdges } from '@/hooks/useHighlightEdges';
 
 const GraphApp = () => {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onEdgeClick, resetSelection } =
     useGraphs();
+
+  const { resetPathEdges } = useHighlightEdges();
+
+  useEffect(() => {
+    resetPathEdges();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className='h-screen w-screen'>
