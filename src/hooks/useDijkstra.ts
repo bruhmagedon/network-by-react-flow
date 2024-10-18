@@ -5,6 +5,8 @@ import { Node, Edge } from '@xyflow/react';
 import { getNodes } from '@/features/node';
 import { useHighlightEdges } from './useHighlightEdges';
 
+export type debugPairs = { path: string[]; totalWeight: number; debugString: string }[];
+
 export const useDijkstra = () => {
   const nodes: Node[] = useSelector(getNodes);
   const edges: Edge[] = useSelector(getEdges);
@@ -22,19 +24,19 @@ export const useDijkstra = () => {
     isDebug?: boolean
   ): { path: string[]; totalWeight: number; debugString: string } => {
     if (!isDebug) {
-      console.log(
-        'Запуск алгоритма Дейкстра от',
-        getNodeLabeForPath(startNodeId),
-        'до',
-        getNodeLabeForPath(endNodeId)
-      );
+      // console.log(
+      //   'Запуск алгоритма Дейкстра от',
+      //   getNodeLabeForPath(startNodeId),
+      //   'до',
+      //   getNodeLabeForPath(endNodeId)
+      // );
     } else {
-      console.log(
-        'DEBUG: Запуск алгоритма Дейкстра от',
-        getNodeLabeForPath(startNodeId),
-        'до',
-        getNodeLabeForPath(endNodeId)
-      );
+      // console.log(
+      //   'DEBUG: Запуск алгоритма Дейкстра от',
+      //   getNodeLabeForPath(startNodeId),
+      //   'до',
+      //   getNodeLabeForPath(endNodeId)
+      // );
     }
 
     // Типизация для хранения расстояний и предыдущих узлов
@@ -98,9 +100,9 @@ export const useDijkstra = () => {
 
     if (path.length === 0) {
       if (isDebug) {
-        console.log(
-          `Невозможно построить маршрут по этим нодам: от ${getNodeLabeForPath(startNodeId)} до ${getNodeLabeForPath(endNodeId)}`
-        );
+        // console.log(
+        //   `Невозможно построить маршрут по этим нодам: от ${getNodeLabeForPath(startNodeId)} до ${getNodeLabeForPath(endNodeId)}`
+        // );
         return {
           path: [],
           totalWeight: 0,
@@ -112,7 +114,7 @@ export const useDijkstra = () => {
     }
 
     const debugFinal = `Кратчайший путь от ${getNodeLabeForPath(startNodeId)} до ${getNodeLabeForPath(endNodeId)} : ${path.map((nodeId) => getNodeLabeForPath(nodeId)).join(' → ')} с общим весом: ${totalWeight}`;
-    console.log(debugFinal);
+    // console.log(debugFinal);
 
     if (!isDebug) {
       highlightPathEdges(path, 'dijkstra');
@@ -121,10 +123,10 @@ export const useDijkstra = () => {
     return { path, totalWeight, debugString: debugFinal };
   };
 
-  const findAllPairsDijkstra = (): { path: string[]; totalWeight: number }[][] => {
-    const allPairsPaths: { path: string[]; totalWeight: number; debugString: string }[][] = [];
+  const findAllPairsDijkstra = (): debugPairs[] => {
+    const allPairsPaths: debugPairs[] = [];
     nodes.forEach((startNode) => {
-      const row: { path: string[]; totalWeight: number; debugString: string }[] = [];
+      const row: debugPairs = [];
       nodes.forEach((endNode) => {
         if (startNode.id !== endNode.id) {
           const result = findShortestPath(startNode.id, endNode.id, true);
@@ -134,7 +136,7 @@ export const useDijkstra = () => {
       allPairsPaths.push(row);
     });
 
-    console.log(JSON.stringify(allPairsPaths));
+    // console.log(JSON.stringify(allPairsPaths));
     return allPairsPaths;
   };
 

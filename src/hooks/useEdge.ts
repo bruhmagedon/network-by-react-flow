@@ -26,6 +26,10 @@ export const useEdge = () => {
   }, [edgesFromStore, setEdgesState]);
 
   const onConnect = (params: Edge | Connection) => {
+    if (params.source === params.target) {
+      alert('Невозможно соединить узел с самим собой');
+      return;
+    }
     const edgeExists = edges.some(
       (edge) => edge.source === params.source && edge.target === params.target
     );

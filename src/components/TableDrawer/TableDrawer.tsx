@@ -107,6 +107,7 @@ export const NodeTable = () => {
             value={data[index][colIndex] !== undefined ? data[index][colIndex] : ''}
             onChange={(e) => handleMatrixChange(index, colIndex, Number(e.target.value))}
             className={`w-full ${data[index][colIndex] === 0 ? 'text-gray-400' : 'text-black'}`}
+            disabled={index === colIndex}
           />
         )
       })),

@@ -1,4 +1,4 @@
-//CompareSheet.tsx
+// CompareSheet.tsx
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -9,23 +9,20 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+import { useState } from 'react';
+import { debugPairs, useDijkstra } from '@/hooks/useDijkstra';
+import { useFloyd } from '@/hooks/useFloyd';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 
 interface CompareSheetProps {
   disabled?: boolean;
 }
 
-// CompareSheet.tsx
-import { useState } from 'react';
-import { useDijkstra } from '@/hooks/useDijkstra';
-import { useFloyd } from '@/hooks/useFloyd';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
-
 export function CompareSheet({ disabled }: CompareSheetProps) {
   const { findAllPairsDijkstra } = useDijkstra();
   const { floydWarshall } = useFloyd();
   const [comparisonData, setComparisonData] = useState<{
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    dijkstra: any;
+    dijkstra: debugPairs[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     floyd: any;
     times: { dijkstraTime: number; floydTime: number };
@@ -37,12 +34,12 @@ export function CompareSheet({ disabled }: CompareSheetProps) {
     const dijkstraTime = performance.now() - dijkstraStart;
 
     const floydStart = performance.now();
-    // const floydResults = floydWarshall();
+    const floydResults = floydWarshall();
     const floydTime = performance.now() - floydStart;
 
     setComparisonData({
       dijkstra: dijkstraResults,
-      floyd: 'floydResults',
+      floyd: floydResults,
       times: { dijkstraTime, floydTime }
     });
   };
@@ -54,16 +51,20 @@ export function CompareSheet({ disabled }: CompareSheetProps) {
           Сравнить два алгоритма
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className='overflow-auto'>
         <SheetHeader>
           <SheetTitle>Сравнение алгоритмов</SheetTitle>
         </SheetHeader>
         <div className='grid gap-4 py-4'>
           {comparisonData && (
-            <div>
-              <p>Время выполнения Дейкстры: {comparisonData.times.dijkstraTime.toFixed(2)} ms</p>
-              <p>Время выполнения Флойда: {comparisonData.times.floydTime.toFixed(2)} ms</p>
-
+            <div className=''>
+              <p>
+                Время выполнения алгоритма Дейкстры: {comparisonData.times.dijkstraTime.toFixed(2)}{' '}
+                ms
+              </p>
+              <p>
+                Время выполнения алгоритма Флойда: {comparisonData.times.floydTime.toFixed(2)} ms
+              </p>
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -72,18 +73,28 @@ export function CompareSheet({ disabled }: CompareSheetProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
-                  {/* {comparisonData.dijkstra.map((row: any, index: number) => (
-                    <TableRow key={index}>
+                  {comparisonData.dijkstra.map((row, rowIndex: number) => (
+                    <TableRow key={rowIndex}>
                       <TableCell>
-                        {row.path.join(' → ')} (Вес: {row.totalWeight})
+                        {row.map((cell) => (
+                          <span key={cell.debugString}>
+                            <p className='font-medium'>{cell.debugString.split(': ')[0]}</p>
+                            <p>{cell.debugString.split(': ')[1]}</p>
+                            <br />
+                          </span>
+                        ))}
                       </TableCell>
                       <TableCell>
-                        {comparisonData.floyd[index].path.join(' → ')} (Вес:{' '}
-                        {comparisonData.floyd[index].totalWeight})
+                        {row.map((cell) => (
+                          <span key={cell.debugString}>
+                            <p className='font-medium'>{cell.debugString.split(': ')[0]}</p>
+                            <p>{cell.debugString.split(': ')[1]}</p>
+                            <br />
+                          </span>
+                        ))}
                       </TableCell>
                     </TableRow>
-                  ))} */}
+                  ))}
                 </TableBody>
               </Table>
             </div>
