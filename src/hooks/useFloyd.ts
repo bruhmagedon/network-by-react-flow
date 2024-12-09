@@ -9,13 +9,7 @@ export const useFloyd = () => {
   const edges: Edge[] = useSelector(getEdges);
   const { highlightPathEdges } = useHighlightEdges();
 
-  const getNodeLabeForPath = (nodeId: string) => {
-    if (nodeId === 'Null') {
-      return 'Null';
-    }
-    const node = nodes.find((node) => node.id === nodeId);
-    return (node?.data.label as string) || nodeId; // Если узел не найден, возвращаем ID
-  };
+  
 
   // возвращает матрицу кратчайших расстояний между всеми узлами графа (distances),
   //  матрицу путей (next),
